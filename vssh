@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+IP=$(./vdig +short $1)
+
+shift
+
+./ussh ubuntu@"$IP" "$@"

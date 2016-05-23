@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+sudo service libvirt-bin stop
+PID=$(cat /var/run/libvirt/network/default.pid)
+sudo kill $PID
+sudo rm /var/lib/libvirt/dnsmasq/*.status
+sudo service libvirt-bin start
+

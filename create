@@ -23,7 +23,6 @@ fi
 
 HOSTNAME=$NAME
 INSTANCE=$NAME
-DISTRO=trusty
 
 IMAGES_DIR=/var/lib/libvirt/images
 
@@ -46,4 +45,9 @@ EOF
 chmod +x user-data
 sudo genisoimage -o $CDROM -V cidata -r -J meta-data user-data
 
-virt-install --virt-type kvm --hvm --import --noautoconsole --disk=$IMAGE --disk=$CDROM,device=cdrom --name $HOSTNAME --memory 1024
+virt-install \
+    --name $HOSTNAME \
+    --virt-type kvm --hvm --noautoconsole \
+    --import --disk=$IMAGE --disk=$CDROM,device=cdrom \
+    --memory 1024 \
+    --network bridge=virbr0,mac=52:54:00:00:00:01

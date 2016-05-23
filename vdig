@@ -1,0 +1,6 @@
+#!/bin/bash
+
+BRIDGE=virbr0
+DNS_SERVER=$(ip addr show dev $BRIDGE | grep '^    inet' | awk '{print $2}' | cut -d '/' -f 1)
+
+dig @${DNS_SERVER} "$@"
