@@ -32,11 +32,13 @@ CDROM=${IMAGES_DIR}/${HOSTNAME}-config.iso
 sudo cp $DISTRO/*.img $IMAGE
 sudo qemu-img resize $IMAGE +25GB
 
+PUBKEYS=$(cat ~/.ssh/authorized_keys | tr '\n' '\0' | xargs -0 printf "  - %s\n")
+
 cat > meta-data <<EOF
 instance-id: $INSTANCE
 local-hostname: $HOSTNAME
 public-keys:
-  - $(cat ~/.ssh/id_rsa.pub)
+$(printf "$PUBKEYS\n")
 EOF
 cat > user-data <<EOF
 #!/bin/bash

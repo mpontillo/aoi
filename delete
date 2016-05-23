@@ -12,6 +12,11 @@ IMAGE=$IMAGES/$NAME.img
 CDROM=$IMAGES/${NAME}-config.iso
 
 sudo virsh destroy $NAME --graceful
-sudo virsh undefine $NAME --remove-all-storage
-# sudo rm -f $IMAGE $CDROM
+
+# Bug: for some reason, --remove-all-storage does not seem to work
+# in all cases.
+sudo virsh undefine $NAME  # --remove-all-storage
+
+# ... so we'll remove them by hand.
+sudo rm -f $IMAGE $CDROM
 
