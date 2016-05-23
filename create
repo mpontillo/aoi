@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 cd "$(dirname $0)" 
 
@@ -53,3 +53,12 @@ virt-install \
     --import --disk=$IMAGE --disk=$CDROM,device=cdrom \
     --memory 1024 \
     --network bridge=virbr0,mac=$(./get_mac $HOSTNAME)
+
+echo -n "Waiting for $HOSTNAME to become available..."
+while [ "$(./vssh $HOSTNAME echo OK 2> /dev/null)" != "OK" ]; do
+    sleep 0.1
+done
+printf "\n"
+
+echo "$HOSTNAME is now available. To access, use:"
+echo "    ./vssh $HOSTNAME [command]"
