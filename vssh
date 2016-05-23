@@ -1,6 +1,18 @@
 #!/bin/bash -e
 
-IP=$(./vdig +short $1)
+HOSTNAME=$1
+
+if [ "$HOSTNAME" == "" ]; then
+    echo "Must supply a hostname first."
+    exit 1
+fi
+
+IP=$(./get_ip_via_arp $HOSTNAME)
+
+if [ "$IP" == "" ]; then
+    echo "IP address could not be found for host: $HOSTNAME"
+    exit 1
+fi
 
 shift
 

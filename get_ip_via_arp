@@ -1,0 +1,10 @@
+#!/bin/bash
+
+HOSTNAME=$1
+
+if [ "$HOSTNAME" == "" ]; then
+    echo "Must supply a hostname."
+    exit 1
+fi
+
+ip -4 neigh show dev virbr0 | grep $(./get_mac $HOSTNAME) | awk '{ print $1 }'
