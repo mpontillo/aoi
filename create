@@ -1,0 +1,49 @@
+#!/bin/bash -ex
+
+cd "$(dirname $0)" 
+
+function error {
+    echo "$@"
+    exit 1
+}
+
+
+if [ "$1" == "" ]; then
+    echo "Must supply a VM name to create."
+    exit 1
+else
+    NAME=$1
+fi
+
+if [ "$2" == "" ]; then
+    DISTRO=trusty
+else
+    DISTRO=$2
+fi
+
+HOSTNAME=$NAME
+INSTANCE=$NAME
+DISTRO=trusty
+
+IMAGES_DIR=/var/lib/libvirt/images
+
+IMAGE=$IMAGES_DIR/$HOSTNAME.img
+CDROM=${IMAGES_DIR}/${HOSTNAME}-config.iso
+
+sudo cp $DISTRO/*.img $IMAGE
+sudo qemu-img resize $IMAGE +25GB
+
+cat > meta-data <<EOF
+instance-id: $INSTANCE
+local-hostname: $HOSTNAME
+public-keys:
+  - $(cat ~/.ssh/id_rsa.pub)
+EOF
+cat > user-data <<EOF
+#!/bin/bash
+echo "Custom user-data has been run."
+EOF
+chmod +x user-data
+sudo genisoimage -o $CDROM -V cidata -r -J meta-data user-data
+
+virt-install --virt-type kvm --hvm --import --noautoconsole --disk=$IMAGE --disk=$CDROM,device=cdrom --name $HOSTNAME --memory 1024

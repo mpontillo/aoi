@@ -1,0 +1,25 @@
+#!/bin/bash -e
+
+function fail {
+    echo "$@"
+    exit 1
+}
+
+function verify {
+    gpg --verify SHA256SUMS.gpg SHA256SUMS || fail "Signature validaiton failed"
+    image=$(ls -rt1 *.img | tail -1)
+    cat SHA256SUMS | grep $image > to_verify
+    sha256sum -c to_verify
+}
+
+cd "$(dirname $0)"
+ROOT="$(pwd)"
+DISTRIBUTIONS="trusty xenial"
+gpg --import /usr/share/keyrings/ubuntu-cloudimage-keyring.gpg
+gpg --keyserver keyserver.ubuntu.com --recv-keys 7DB87C81
+for dist in $DISTRIBUTIONS; do
+    cd "$ROOT"
+    cd "$dist"
+    echo "Validating $dist..."
+    verify
+done

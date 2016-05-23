@@ -1,0 +1,17 @@
+#!/bin/bash -xe
+
+if [ "$1" == "" ]; then
+    echo "Must supply a VM name."
+    exit 1
+fi
+
+NAME=$1
+IMAGES=/var/lib/libvirt/images
+
+IMAGE=$IMAGES/$NAME.img
+CDROM=$IMAGES/${NAME}-config.iso
+
+sudo virsh destroy $NAME --graceful
+sudo virsh undefine $NAME
+sudo rm -f $IMAGE $CDROM
+
