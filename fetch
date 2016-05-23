@@ -5,12 +5,12 @@ cd $DIR
 
 function fetch_image {
     RELEASE=$1
-    cd $DIR
     mkdir -p $RELEASE
-    cd $RELEASE
+    pushd $RELEASE
     wget https://cloud-images.ubuntu.com/$RELEASE/current/SHA256SUMS
     wget https://cloud-images.ubuntu.com/$RELEASE/current/SHA256SUMS.gpg
     wget https://cloud-images.ubuntu.com/$RELEASE/current/$RELEASE-server-cloudimg-amd64-disk1.img
+    popd
 }
 
 fetch_image trusty
