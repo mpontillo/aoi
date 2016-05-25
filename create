@@ -60,8 +60,8 @@ public-keys:
 $(printf "$PUBKEYS\n")
 EOF
 cat > user-data <<EOF
-#!/bin/bash
-echo "Custom user-data has been run."
+#cloud-config
+manage_etc_hosts: True
 EOF
 chmod +x user-data
 echo "cloud-init meta data:"
@@ -80,11 +80,24 @@ virt-install \
     --network network=default,mac=$(./get-mac $HOSTNAME) \
     --network network=maas,mac=$(./get-mac maas-$HOSTNAME)
 
+function wait_for {
+    while [ "$(./vssh $1 echo OK 2> /dev/null)" != "OK" ]; do
+        sleep 0.1
+    done
+}
+
 echo -n "Waiting for $HOSTNAME to become available..."
-while [ "$(./vssh $HOSTNAME echo OK 2> /dev/null)" != "OK" ]; do
-    sleep 0.1
-done
+wait_for $HOSTNAME
 printf "\n"
+
+if [ "$DISTRO" == "xenial" ]; then
+    # xenial cloud-init has a race condition whereby the hostname provided
+    # by DHCP will not be correct. Need to force a DHCP renewal.
+    # See https://launchpad.net/bugs/1574963
+    echo "Rebooting to reset lease table..."
+    ./vssh $HOSTNAME sudo service networking reload
+    wait_for $HOSTNAME
+fi
 
 echo "$HOSTNAME is now available. To access, use:"
 echo "    ./vssh $HOSTNAME [command]"
