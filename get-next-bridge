@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+cd $(dirname $0)
+
+LAST_BRIDGE="$(./dump-virsh-bridges | grep -o '[0-9]' | sort -n | tail -1)"
+
+let NEXT_BRIDGE=$LAST_BRIDGE+1
+
+echo virbr$NEXT_BRIDGE
