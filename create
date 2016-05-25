@@ -24,16 +24,35 @@ fi
 HOSTNAME=$NAME
 INSTANCE=$NAME
 
-IMAGES_DIR=/var/lib/libvirt/images
+IMAGES_DIR=$HOME/.cloud-images
 
-IMAGE=$IMAGES_DIR/$HOSTNAME.img
+TARGET_IMAGE=$HOSTNAME.img
+TARGET_IMAGE_PATH=$IMAGES_DIR/$HOSTNAME.img
 CDROM=${IMAGES_DIR}/${HOSTNAME}-config.iso
 
-sudo cp $DISTRO/*.img $IMAGE
-sudo qemu-img resize $IMAGE +25GB
+virsh pool-define-as \
+    --name cloud-images --type dir --target $IMAGES_DIR 2> /dev/null \
+    || echo "Image pool already exists: $IMAGES_DIR"
+
+pushd $IMAGES_DIR > /dev/null 2>&1
+BACKING_IMAGE=$(readlink $DISTRO.baseimg) || echo "Base image not found."
+if [ "$BACKING_IMAGE" == "" ]; then
+    echo "Must specify a distribution that matches an existing image."
+    echo "Available images:"
+    find . -type l -name '*.baseimg' | sed 's/\.\//    /' | sed 's/.baseimg$//'
+    exit 1
+fi
+BACKING_IMAGE_PATH=$IMAGES_DIR/$BACKING_IMAGE
+qemu-img create -f qcow2 -b "$BACKING_IMAGE" $TARGET_IMAGE
+qemu-img resize $TARGET_IMAGE +25GB
+qemu-img info $TARGET_IMAGE
+popd > /dev/null 2>&1
 
 PUBKEYS=$(cat ~/.ssh/authorized_keys | tr '\n' '\0' | xargs -0 printf "  - %s\n")
 
+# Create a CD-ROM with cloud-init meta-data and user-data files.
+CIDATA=$(mktemp -d)
+pushd "$CIDATA"
 cat > meta-data <<EOF
 instance-id: $INSTANCE
 local-hostname: $HOSTNAME
@@ -45,12 +64,18 @@ cat > user-data <<EOF
 echo "Custom user-data has been run."
 EOF
 chmod +x user-data
-sudo genisoimage -o $CDROM -V cidata -r -J meta-data user-data
+echo "cloud-init meta data:"
+cat meta-data
+echo ""
+echo "Writing cloud-init data to: $CDROM"
+genisoimage -o $CDROM -V cidata -r -J meta-data user-data
+popd
+rm -rf "$CIDATA"
 
 virt-install \
     --name $HOSTNAME \
     --virt-type kvm --hvm --noautoconsole \
-    --import --disk=$IMAGE --disk=$CDROM,device=cdrom \
+    --import --disk=$TARGET_IMAGE_PATH,backing_store=$BACKING_IMAGE_PATH --disk=$CDROM,device=cdrom \
     --memory 1024 \
     --network network=default,mac=$(./get-mac $HOSTNAME) \
     --network network=maas,mac=$(./get-mac maas-$HOSTNAME)

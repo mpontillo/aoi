@@ -17,6 +17,17 @@ Your `~/.ssh/authorized_keys` file *MUST* be populated with whatever keys
 you wish to use with the virtual machines. The cloud images do not have
 a default username and password.
 
+Your user must be in the `libvirtd` and `kvm` groups for these scripts to
+work.
+
+### Possible Workaround Needed
+
+If you get errors regarding permission to access the backing images, you may
+need to set the AppArmor profile for libvirt to *complain mode*:
+
+    $ sudo apt-get install apparmor-profiles apparmor-utils
+    $ sudo aa-complain /usr/lib/libvirt/virt-aa-helper
+
 ## Usage
 
 First, you need to pull down the cloud images. The `fetch` script is used
@@ -32,11 +43,17 @@ distribution is `trusty`, but you can also specify `xenial`.
 
 Example usage (from scratch):
 
-    ./fetch
-    ./verify
+    ./sync
     ./create <vm-hostname> [distro]
 
-(The `fetch` and `verify` steps only need to happen once.)
+For example, to create a virtual machine named "foo" running xenial, you
+could use:
+
+    ./create foo xenial
+
+The **sync** step only needs to happen once. When run subsequently, it will
+fetch the latest cloud image, but leave the old image in place (based on its
+sha256 hash) in case other images were built upon it.
 
 After you've finished with the virutal machine, you can easily delete it
 (along with all its data):

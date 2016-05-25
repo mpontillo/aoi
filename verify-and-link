@@ -14,8 +14,8 @@ function verify_and_link {
     sha256sum -c to_verify
     rm -f to_verify
     cd ..
-    ln -vf "$dist/$image" $HASH.img
-    ln -vsf $HASH.img $dist.img
+    ln -vf "$dist/$image" $HASH.baseimg
+    ln -vsf $HASH.baseimg $dist.baseimg
 }
 
 if [ "$*" == "" ]; then

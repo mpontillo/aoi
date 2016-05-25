@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 if [ "$1" == "" ]; then
     echo "Must supply a VM name."
@@ -6,7 +6,7 @@ if [ "$1" == "" ]; then
 fi
 
 NAME=$1
-IMAGES=/var/lib/libvirt/images
+IMAGES=$HOME/.cloud-images
 
 IMAGE=$IMAGES/$NAME.img
 CDROM=$IMAGES/${NAME}-config.iso
@@ -18,5 +18,4 @@ sudo virsh destroy $NAME --graceful
 sudo virsh undefine $NAME  # --remove-all-storage
 
 # ... so we'll remove them by hand.
-sudo rm -f $IMAGE $CDROM
-
+rm -f $IMAGE $CDROM

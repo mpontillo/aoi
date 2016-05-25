@@ -12,9 +12,17 @@ IMAGES_DIR=$HOME/.cloud-images
 DISTRO_IMAGES=$HOME/.cloud-images/$DISTRO
 
 mkdir -p $DISTRO_IMAGES
+# Set premissions so that both KVM and the current user will retain access
+# to the synced images. (Usually the libvirt-qemu user grabs ownership of
+# the images, which may prevent a future rsync from working properly.)
+chown $USER:kvm $IMAGES_DIR
+# These commands will start to fail once VMs are created, but we don't want
+# tne entire script to fail.
+setfacl -m default:user:$UID:rwX -R $IMAGES_DIR 2> /dev/null || true
+setfacl -m user:$UID:rwX -R $IMAGES_DIR 2> /dev/null || true
 cd $DISTRO_IMAGES
 
 rsync \
-    --archive --verbose --links --prune-empty-dirs \
+    --verbose --recursive --times --links --prune-empty-dirs \
     --include '*-amd64-disk1.img' --include 'SHA256*' --exclude '*' \
     rsync://cloud-images.ubuntu.com/cloud-images/$DISTRO/current/ .
