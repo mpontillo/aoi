@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+cd $(dirname $0)
+NETWORKS="$(virsh net-list --name)"
+
+mkdir -p virsh-networks
+for network in $NETWORKS; do
+    echo "Getting XML for: $network"
+    virsh net-dumpxml $network > virsh-networks/$network
+done

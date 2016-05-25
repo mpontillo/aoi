@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+HOSTNAME=$1
+VIRSH_NET=default
+
+if [ "$HOSTNAME" == "" ]; then
+    echo "Must supply a hostname."
+    exit 1
+fi
+
+virsh net-dhcp-leases $VIRSH_NET --mac $(./get-mac $HOSTNAME) \
+    | tail -2 | head -1 \
+    | awk '{ print $5 }' \
+    | cut -d '/' -f 1

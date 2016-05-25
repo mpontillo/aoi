@@ -7,4 +7,4 @@ if [ "$HOSTNAME" == "" ]; then
     exit 1
 fi
 
-ip -4 neigh show dev virbr0 | grep $(./get_mac $HOSTNAME) | awk '{ print $1 }'
+ip -4 neigh show dev virbr0 | grep $(./get-mac $HOSTNAME) | awk '{ print $1 }'

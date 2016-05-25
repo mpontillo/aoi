@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+cd $(dirname $0)
+NETWORKS="$(virsh net-list --name)"
+
+for network in $NETWORKS; do
+    virsh net-info $network | grep ^Bridge | awk '{ print $2 }'
+done | sort -n

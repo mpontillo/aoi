@@ -52,7 +52,7 @@ virt-install \
     --virt-type kvm --hvm --noautoconsole \
     --import --disk=$IMAGE --disk=$CDROM,device=cdrom \
     --memory 1024 \
-    --network bridge=virbr0,mac=$(./get_mac $HOSTNAME)
+    --network network=default,mac=$(./get-mac $HOSTNAME)
 
 echo -n "Waiting for $HOSTNAME to become available..."
 while [ "$(./vssh $HOSTNAME echo OK 2> /dev/null)" != "OK" ]; do
