@@ -65,6 +65,10 @@ is useful so that when tearing down and recreating virtual machines with the
 same name, consistent MAC addresses are used, which should cause `dnsmasq` to
 hand out consistent IP addresses as well.
 
+### `get-virsh-bridge`
+
+Gets the name of a virsh bridge, based on the virsh network name.
+
 ### `ussh`
 
 The `ussh` utility stands for **Untrusted SSH**. It is a wrapper that allows

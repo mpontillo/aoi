@@ -9,7 +9,7 @@ MAC=$(./get-mac NETWORK.$NAME)
 IP=172.16.99.1
 NETMASK=255.255.255.0
 
-XML=net-maas.xml
+XML=net-$NAME.xml
 
 cat > $XML <<EOF
 <network>
