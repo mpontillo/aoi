@@ -1,0 +1,31 @@
+#!/bin/bash -e
+
+cd "$(dirname $0)"
+
+NAME=maas
+UUID=$(uuid)
+BRIDGE=$(./get-next-bridge)
+MAC=$(./get-mac NETWORK.$NAME)
+IP=172.16.99.1
+NETMASK=255.255.255.0
+
+XML=net-maas.xml
+
+cat > $XML <<EOF
+<network>
+  <name>$NAME</name>
+  <uuid>$UUID</uuid>
+  <forward dev='lo' mode='route'>
+    <interface dev='lo'/>
+  </forward>
+  <bridge name='$BRIDGE' stp='on' delay='0'/>
+  <mac address='$MAC'/>
+  <domain name='maas'/>
+  <ip address='$IP' netmask='$NETMASK'>
+  </ip>
+</network>
+EOF
+
+virsh net-define $XML
+virsh net-autostart $NAME
+virsh net-start $NAME

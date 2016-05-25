@@ -11,7 +11,7 @@ guaranteed to work on any other platform. (At least one script requires
 
 First, you'll need to ensure the following packages are installed:
 
-    sudo apt install libvirt-bin qemu-kvm virtinst
+    sudo apt install libvirt-bin qemu-kvm virtinst uuid
 
 Your `~/.ssh/authorized_keys` file *MUST* be populated with whatever keys
 you wish to use with the virtual machines. The cloud images do not have
