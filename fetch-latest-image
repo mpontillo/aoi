@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+DISTRO=$1
+
+if [ "$DISTRO" == "" ]; then
+    echo "Must supply a distribution name. For example:"
+    echo "    $0 xenial"
+    exit 1
+fi
+
+IMAGES_DIR=$HOME/.cloud-images
+DISTRO_IMAGES=$HOME/.cloud-images/$DISTRO
+
+mkdir -p $DISTRO_IMAGES
+cd $DISTRO_IMAGES
+
+rsync \
+    --archive --verbose --links --prune-empty-dirs \
+    --include '*-amd64-disk1.img' --include 'SHA256*' --exclude '*' \
+    rsync://cloud-images.ubuntu.com/cloud-images/$DISTRO/current/ .

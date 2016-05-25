@@ -1,0 +1,35 @@
+#!/bin/bash -e
+
+function fail {
+    echo "$@"
+    exit 1
+}
+
+function verify_and_link {
+    cd "$dist"
+    gpg --verify SHA256SUMS.gpg SHA256SUMS > /dev/null 2>&1 || fail "Signature validaiton failed"
+    image=$(ls -rt1 *.img | tail -1)
+    cat SHA256SUMS | grep $image > to_verify
+    HASH=$(cat SHA256SUMS | grep $image | awk '{ print $1 }')
+    sha256sum -c to_verify
+    rm -f to_verify
+    cd ..
+    ln -vf "$dist/$image" $HASH.img
+    ln -vsf $HASH.img $dist.img
+}
+
+cd "$HOME/.cloud-images"
+ROOT="$(pwd)"
+DISTRIBUTIONS="trusty xenial"
+
+# Import GPG keys needed to validate cloud images.
+gpg --import /usr/share/keyrings/ubuntu-cloudimage-keyring.gpg > /dev/null 2>&1
+gpg --keyserver keyserver.ubuntu.com --recv-keys 7DB87C81 > /dev/null 2>&1
+
+for dist in $DISTRIBUTIONS; do
+    cd "$ROOT"
+    echo "Validating and linking $dist..."
+    verify_and_link $dist
+done
+echo ""
+echo "Success. Verified images can be found in: $ROOT"
