@@ -2,7 +2,11 @@
 
 cd "$(dirname $0)"
 
-SYNC="trusty xenial"
+if [ "$*" != "" ]; then
+    SYNC="$@"
+else
+    SYNC="trusty xenial"
+fi
 
 ./fetch-releases $SYNC
 ./verify-and-link $SYNC

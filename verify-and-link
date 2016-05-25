@@ -18,9 +18,14 @@ function verify_and_link {
     ln -vsf $HASH.img $dist.img
 }
 
+if [ "$*" == "" ]; then
+    echo "Must supply distributions to sync. Example:"
+    echo "    $0 xenial trusty"
+fi
+
 cd "$HOME/.cloud-images"
 ROOT="$(pwd)"
-DISTRIBUTIONS="trusty xenial"
+DISTRIBUTIONS="$@"
 
 # Import GPG keys needed to validate cloud images.
 gpg --import /usr/share/keyrings/ubuntu-cloudimage-keyring.gpg > /dev/null 2>&1
