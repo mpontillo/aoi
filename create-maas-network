@@ -2,6 +2,12 @@
 
 cd "$(dirname $0)"
 
+TMPDIR="$(mktemp -d)"
+function cleanup {
+    rm -rf $TMPDIR
+}
+trap cleanup EXIT
+
 NAME=testnet
 UUID=$(uuid)
 BRIDGE=$(./get-next-bridge)
@@ -9,7 +15,7 @@ MAC=$(./get-mac NETWORK.$NAME)
 IP=172.16.99.1
 NETMASK=255.255.255.0
 
-XML=net-$NAME.xml
+XML=$TMPDIR/net-$NAME.xml
 
 cat > $XML <<EOF
 <network>
