@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+if [ $(id -u) -eq 0 ]; then
+    echo "Please run this script as a normal user."
+    echo "You will be prompted by 'sudo' if necessary."
+    exit 1
+fi
+
+sudo apt-get update
+sudo apt-get install -yu \
+    libvirt-bin qemu-kvm virtinst uuid apparmor-profiles apparmor-utils
+sudo usermod -a -G libvirtd,kvm $USER
+sudo aa-complain /usr/lib/libvirt/virt-aa-helper
+
+
+cd "$(dirname $0)"
+./configure-networks
+
+./sync
