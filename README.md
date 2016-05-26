@@ -45,6 +45,7 @@ After you've finished with the virutal machine, you can easily delete it
 
 ## Configuring a Test Network
 
+
 By default, a test network (called `testnet`) will be created by the `init`
 script. Also, the domain name for the default network will be set to `.vm`.
 This means you can look up the IP addresses for your machines in the
@@ -59,6 +60,10 @@ are running NetworkManager), you can create
 
 This assumes that your `default` network is configured to with an IP address
 of `192.168.122.1`.
+
+**Note:** This currently causes issues whereby DNS queries can become
+extremely slow. See [this question on Server Fault](https://serverfault.com/questions/642448/)
+for more information.
 
 ## Utility Scripts
 

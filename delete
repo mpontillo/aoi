@@ -18,4 +18,7 @@ virsh destroy $NAME --graceful
 virsh undefine $NAME  # --remove-all-storage
 
 # ... so we'll remove them by hand.
-rm -f $IMAGE $CDROM
+rm -f $IMAGE
+
+# The CD-ROM might not exist if this was just a test host.
+rm -f $CDROM || true
