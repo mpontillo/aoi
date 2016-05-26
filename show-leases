@@ -1,0 +1,3 @@
+#!/bin/bash
+
+virsh net-dhcp-leases default
