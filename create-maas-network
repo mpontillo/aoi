@@ -2,7 +2,7 @@
 
 cd "$(dirname $0)"
 
-NAME=maas
+NAME=testnet
 UUID=$(uuid)
 BRIDGE=$(./get-next-bridge)
 MAC=$(./get-mac NETWORK.$NAME)
@@ -20,7 +20,7 @@ cat > $XML <<EOF
   </forward>
   <bridge name='$BRIDGE' stp='on' delay='0'/>
   <mac address='$MAC'/>
-  <domain name='maas'/>
+  <domain name='testnet'/>
   <ip address='$IP' netmask='$NETMASK'>
   </ip>
 </network>

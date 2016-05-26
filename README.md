@@ -59,7 +59,7 @@ After you've finished with the virutal machine, you can easily delete it
 ## Configuring a Test Network
 
 You can configure a test network by running the `./configure-networks` script.
-This will create a `maas` network, and also redefine the domain name for the
+This will create a `testnet` network, and also redefine the domain name for the
 default network to be `.vm`. This means you can look up the IP addresses
 for your machines in the `.vm` domain using the `dnsmasq` running on the default
 network, which is at `192.168.122.1` by default.
