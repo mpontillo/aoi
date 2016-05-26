@@ -32,27 +32,24 @@ need to set the AppArmor profile for libvirt to *complain mode*:
 
 ## Usage
 
-First, you need to pull down the cloud images. The `fetch` script is used
-for this. Simply type `./sync` and the images (plus their GPG signatures)
-will be downloaded, verified, and symlinked in `~/.cloud-images`.
-
-Finally, create the virtual machine.  When creating a virtual machine, you must
-specify the desired hostname, and the desired distribution. The default
-distribution is `trusty`, but you can also specify `xenial`.
+An `init` script is supplied, which will take care of the tasks needed to get
+started. If your user is not already in the `kvm` and `libvirtd` groups, you
+may need to run the script twice.
 
 Example usage (from scratch):
 
-    ./sync
+    ./init
     ./create <vm-hostname> [distro]
 
-For example, to create a virtual machine named "foo" running xenial, you
+For example, to create a virtual machine named `foo` running xenial, you
 could use:
 
     ./create foo xenial
 
-The **sync** step only needs to happen once. When run subsequently, it will
-fetch the latest cloud image, but leave the old image in place (based on its
-sha256 hash) in case other images were built upon it.
+As part of the `init` script, the `sync` script runs. While `sync` must only
+be run once, if it is run subsequently, it will fetch the latest cloud image,
+but leave the old image in place (based on its sha256 hash) in case other
+images were built upon it.
 
 After you've finished with the virutal machine, you can easily delete it
 (along with all its data):
@@ -114,8 +111,8 @@ expected hostname-based MAC from the `get_mac` script), then runs `ussh` to open
 
 ### `vcleardns`
 
-Utility script to clear out `dnsmasq`'s lease database for `virbr0`.
-Also restarts the `libvirt-bin` service.
+Utility script to clear out `dnsmasq`'s lease database for the default network
+(most likely `virbr0`).  Also restarts the `libvirt-bin` service.
 
 ### `get-mac`
 
