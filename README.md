@@ -33,11 +33,8 @@ need to set the AppArmor profile for libvirt to *complain mode*:
 ## Usage
 
 First, you need to pull down the cloud images. The `fetch` script is used
-for this. Simply type `./fetch` and the images (plus their GPG signatures)
-will be downloaded.
-
-Next, it would be wise to verify the signed image SHA256 hashes. The `verify`
-script can be used for that.
+for this. Simply type `./sync` and the images (plus their GPG signatures)
+will be downloaded, verified, and symlinked in `~/.cloud-images`.
 
 Finally, create the virtual machine.  When creating a virtual machine, you must
 specify the desired hostname, and the desired distribution. The default
@@ -61,6 +58,22 @@ After you've finished with the virutal machine, you can easily delete it
 (along with all its data):
 
     ./delete <vm-hostname>
+
+## Configuring a Test Network
+
+You can configure a test network by running the `./configure-networks` script.
+This will create a `maas` network, and also redefine the domain name for the
+default network to be `.vm`. This means you can look up the IP addresses
+for your machines in the `.vm` domain using the `dnsmasq` running on the default
+network, which is at `192.168.122.1` by default.
+
+If you want your virutual machines to be resolved in Ubuntu, (assuming you are running
+NetworkManager), you can create `/etc/NetworkManager/dnsmasq.d/libvirt.conf` as follows:
+
+    server=/vm/192.168.122.1
+
+This assumes that your `default` network is configured to with an IP address
+of `192.168.122.1`.
 
 ## Utility Scripts
 
