@@ -9,26 +9,13 @@ This set of scripts was developed on Ubuntu 16.04 LTS (Xenial). It is not
 guaranteed to work on any other platform. (At least one script requires
 `python3` at the time of this writing.)
 
-First, you'll need to ensure the following packages are installed:
-
-    sudo apt install libvirt-bin qemu-kvm virtinst uuid
+Assuming your platform is supported, the `init` script will take care
+of setting up the dependencies. See the **Installation Notes** section
+for more details.
 
 Your `~/.ssh/authorized_keys` file *MUST* be populated with whatever keys
 you wish to use with the virtual machines. The cloud images do not have
 a default username and password.
-
-Your user must be in the `libvirtd` and `kvm` groups for these scripts to
-work:
-
-    sudo usermod -a -G libvirtd,kvm $USER
-
-### Possible Workaround Needed
-
-If you get errors regarding permission to access the backing images, you may
-need to set the AppArmor profile for libvirt to *complain mode*:
-
-    $ sudo apt-get install apparmor-profiles apparmor-utils
-    $ sudo aa-complain /usr/lib/libvirt/virt-aa-helper
 
 ## Usage
 
@@ -58,14 +45,15 @@ After you've finished with the virutal machine, you can easily delete it
 
 ## Configuring a Test Network
 
-You can configure a test network by running the `./configure-networks` script.
-This will create a `testnet` network, and also redefine the domain name for the
-default network to be `.vm`. This means you can look up the IP addresses
-for your machines in the `.vm` domain using the `dnsmasq` running on the default
-network, which is at `192.168.122.1` by default.
+By default, a test network (called `testnet`) will be created by the `init`
+script. Also, the domain name for the default network will be set to `.vm`.
+This means you can look up the IP addresses for your machines in the
+`.vm` domain by querying the `dnsmasq` running on the default network, which
+is at `192.168.122.1` by default.
 
-If you want your virutual machines to be resolved in Ubuntu, (assuming you are running
-NetworkManager), you can create `/etc/NetworkManager/dnsmasq.d/libvirt.conf` as follows:
+If you want your virutual machines to be resolved in Ubuntu, (assuming you
+are running NetworkManager), you can create 
+`/etc/NetworkManager/dnsmasq.d/libvirt.conf` as follows:
 
     server=/vm/192.168.122.1
 
@@ -124,3 +112,22 @@ hand out consistent IP addresses as well.
 ### `vdig`
 
 Wrapper to use `dig` to query the `dnsmasq` running on `virbr0`.
+
+## Installation Notes
+
+First, you'll need to ensure the following packages are installed:
+
+    sudo apt install libvirt-bin qemu-kvm virtinst uuid
+
+Your user must be in the `libvirtd` and `kvm` groups for these scripts to
+work:
+
+    sudo usermod -a -G libvirtd,kvm $USER
+
+### Possible Workaround Needed
+
+If you get errors regarding permission to access the backing images, you may
+need to set the AppArmor profile for libvirt to *complain mode*:
+
+    $ sudo apt-get install apparmor-profiles apparmor-utils
+    $ sudo aa-complain /usr/lib/libvirt/virt-aa-helper
