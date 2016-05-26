@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+cd "$(dirname $0)"
+
+if [ "$2" == "" ]; then
+    echo "Usage: $0 <vm> <launchpad-id>"
+    exit 1
+fi
+
+./vssh $1 sudo rm /root/.ssh/authorized_keys
+./vssh $1 sudo -H ssh-import-id $2
+
