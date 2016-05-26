@@ -18,7 +18,9 @@ you wish to use with the virtual machines. The cloud images do not have
 a default username and password.
 
 Your user must be in the `libvirtd` and `kvm` groups for these scripts to
-work.
+work:
+
+    sudo usermod -a -G libvirtd,kvm $USER
 
 ### Possible Workaround Needed
 

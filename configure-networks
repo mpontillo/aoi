@@ -1,0 +1,30 @@
+#!/bin/bash -e
+
+DEFAULT_DOMAIN=vm
+DEFAULT_NETWORK=default
+MAAS_NETWORK=maas
+
+cd "$(dirname $0)"
+SCRIPT_DIR="$(pwd)"
+
+# First, define the maas network (if needed)
+virsh net-dumpxml maas > /dev/null 2> /dev/null || ./create-maas-network
+
+# Next, create a temporary directory for modifying the XML for the default
+# network. We want to give it a DNS domain, so we can forward DNS queries to
+# it.
+TMPDIR="$(mktemp -d)"
+function cleanup {
+    rm -rf $TMPDIR
+}
+trap cleanup EXIT
+cd "$TMPDIR"
+
+# Dump the XML for the default domain, modify the domain, and then redefine
+# the network. Then stop and start it for the changes to take effect.
+virsh net-dumpxml $DEFAULT_NETWORK > default.xml
+$SCRIPT_DIR/update-virsh-net-xml-domain default.xml $DEFAULT_DOMAIN > new.xml
+virsh net-define new.xml
+# Don't worry, this doesn't destroy anything. Just stops the network.
+virsh net-destroy $DEFAULT_NETWORK
+virsh net-start $DEFAULT_NETWORK

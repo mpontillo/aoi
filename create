@@ -79,6 +79,7 @@ virt-install \
     --memory 1024 \
     --network network=default,mac=$(./get-mac $HOSTNAME) \
     --network network=maas,mac=$(./get-mac maas-$HOSTNAME)
+virsh autostart $HOSTNAME
 
 function wait_for {
     while [ "$(./vssh $1 echo OK 2> /dev/null)" != "OK" ]; do
