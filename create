@@ -78,7 +78,7 @@ virt-install \
     --import --disk=$TARGET_IMAGE_PATH,backing_store=$BACKING_IMAGE_PATH --disk=$CDROM,device=cdrom \
     --memory 1024 \
     --network network=default,mac=$(./get-mac $HOSTNAME) \
-    --network network=testnet,mac=$(./get-mac maas-$HOSTNAME)
+    --network network=testnet,mac=$(./get-mac testnet-$HOSTNAME)
 virsh autostart $HOSTNAME
 
 function wait_for {

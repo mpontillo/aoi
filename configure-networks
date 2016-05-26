@@ -8,7 +8,7 @@ cd "$(dirname $0)"
 SCRIPT_DIR="$(pwd)"
 
 # First, define the testnet network (if needed)
-virsh net-dumpxml testnet > /dev/null 2> /dev/null || ./create-maas-network
+virsh net-dumpxml testnet > /dev/null 2> /dev/null || ./create-test-network
 
 # Next, create a temporary directory for modifying the XML for the default
 # network. We want to give it a DNS domain, so we can forward DNS queries to
