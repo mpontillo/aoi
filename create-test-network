@@ -11,18 +11,26 @@ trap cleanup EXIT
 NAME=testnet
 UUID=$(uuid)
 BRIDGE=$(./get-next-bridge)
-MAC=$(./get-mac NETWORK.$NAME)
+MAC=$(./get-mac BRIDGE.$NAME)
 IP=172.16.99.1
 NETMASK=255.255.255.0
 
 XML=$TMPDIR/net-$NAME.xml
 
+# Note: In the future, we may also want to create networks without direct
+# internet access. In that case, we can change the <forward/> element to:
+#  <forward dev='lo' mode='route'>
+#    <interface dev='lo'/>
+#  </forward>
+
 cat > $XML <<EOF
 <network>
   <name>$NAME</name>
   <uuid>$UUID</uuid>
-  <forward dev='lo' mode='route'>
-    <interface dev='lo'/>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
   </forward>
   <bridge name='$BRIDGE' stp='on' delay='0'/>
   <mac address='$MAC'/>
