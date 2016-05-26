@@ -12,8 +12,18 @@ sudo apt-get install -yu \
 sudo usermod -a -G libvirtd,kvm $USER
 sudo aa-complain /usr/lib/libvirt/virt-aa-helper
 
-
 cd "$(dirname $0)"
-./configure-networks
 
+if ! id | awk '{ print $3 }' | grep '(libvirtd)' | grep -q '(kvm)'; then
+    echo ""
+    echo "Your user was just added to the 'libvirtd' and 'kvm' groups, but"
+    echo "membership was not yet taken effect."
+    echo "You need to log out, log back in, and then re-run:"
+    echo ""
+    echo "    $(pwd)/$(basename $0)"
+    echo ""
+    exit 1
+fi
+
+./configure-networks
 ./sync
