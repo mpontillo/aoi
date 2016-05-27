@@ -1,0 +1,44 @@
+#!/bin/bash -e
+
+cd "$(dirname $0)" 
+
+function error {
+    echo "$@"
+    exit 1
+}
+
+
+if [ "$1" == "" ]; then
+    echo "Must supply a VM name to create."
+    exit 1
+else
+    NAME=$1
+fi
+
+HOSTNAME=$NAME
+INSTANCE=$NAME
+
+IMAGES_DIR=$HOME/.cloud-images
+
+TARGET_IMAGE=$HOSTNAME.img
+TARGET_IMAGE_PATH=$IMAGES_DIR/$HOSTNAME.img
+
+virsh pool-define-as \
+    --name cloud-images --type dir --target $IMAGES_DIR 2> /dev/null \
+    || echo "Image pool already exists: $IMAGES_DIR"
+
+pushd $IMAGES_DIR > /dev/null 2>&1
+qemu-img create -f qcow2 $TARGET_IMAGE 25G
+qemu-img info $TARGET_IMAGE
+popd > /dev/null 2>&1
+
+virt-install \
+    --name $HOSTNAME \
+    --virt-type kvm --hvm --noautoconsole \
+    --boot network,hd \
+    --import --disk=$TARGET_IMAGE_PATH \
+    --memory 1024 \
+    --network network=testnet,mac=$(./get-mac testnet-$HOSTNAME) \
+    --network network=testnet,mac=$(./get-mac testnet-2-$HOSTNAME)
+
+echo "Test host created: $HOSTNAME"
