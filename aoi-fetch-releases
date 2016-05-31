@@ -9,6 +9,6 @@ fi
 cd "$(dirname $0)"
 while [ "$1" != "" ]; do
     echo "Fetching $1..."
-    ./fetch-latest-image $1
+    ./aoi-fetch-latest-image $1
     shift
 done

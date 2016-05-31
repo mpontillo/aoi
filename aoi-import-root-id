@@ -7,6 +7,6 @@ if [ "$2" == "" ]; then
     exit 1
 fi
 
-./vssh $1 sudo rm /root/.ssh/authorized_keys
-./vssh $1 sudo -H ssh-import-id $2
+./aoi-ssh $1 sudo rm /root/.ssh/authorized_keys
+./aoi-ssh $1 sudo -H ssh-import-id $2
 

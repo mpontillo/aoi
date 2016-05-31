@@ -10,8 +10,8 @@ trap cleanup EXIT
 
 NAME=testnet
 UUID=$(uuid)
-BRIDGE=$(./get-next-bridge)
-MAC=$(./get-mac BRIDGE.$NAME)
+BRIDGE=$(./aoi-get-next-libvirt-bridge)
+MAC=$(./aoi-get-mac BRIDGE.$NAME)
 IP=172.16.99.1
 NETMASK=255.255.255.0
 

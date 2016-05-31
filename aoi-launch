@@ -77,12 +77,12 @@ virt-install \
     --virt-type kvm --hvm --noautoconsole \
     --import --disk=$TARGET_IMAGE_PATH,backing_store=$BACKING_IMAGE_PATH --disk=$CDROM,device=cdrom \
     --memory 1024 \
-    --network network=default,mac=$(./get-mac $HOSTNAME) \
-    --network network=testnet,mac=$(./get-mac testnet-$HOSTNAME)
+    --network network=default,mac=$(./aoi-get-mac $HOSTNAME) \
+    --network network=testnet,mac=$(./aoi-get-mac testnet-$HOSTNAME)
 virsh autostart $HOSTNAME
 
 function wait_for {
-    while [ "$(./vssh $1 echo OK 2> /dev/null)" != "OK" ]; do
+    while [ "$(./aoi-ssh $1 echo OK 2> /dev/null)" != "OK" ]; do
         sleep 0.1
     done
 }
@@ -96,9 +96,9 @@ if [ "$DISTRO" == "xenial" ]; then
     # by DHCP will not be correct. Need to force a DHCP renewal.
     # See https://launchpad.net/bugs/1574963
     echo "Rebooting to reset lease table..."
-    ./vssh $HOSTNAME sudo service networking reload
+    ./aoi-ssh $HOSTNAME sudo service networking reload
     wait_for $HOSTNAME
 fi
 
 echo "$HOSTNAME is now available. To access, use:"
-echo "    ./vssh $HOSTNAME [command]"
+echo "    ./aoi-ssh $HOSTNAME [command]"

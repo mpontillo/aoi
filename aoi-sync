@@ -8,5 +8,5 @@ else
     SYNC="trusty xenial"
 fi
 
-./fetch-releases $SYNC
-./verify-and-link $SYNC
+./aoi-fetch-releases $SYNC
+./aoi-verify-and-link $SYNC

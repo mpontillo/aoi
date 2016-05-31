@@ -8,7 +8,7 @@ if [ "$HOSTNAME" == "" ]; then
     exit 1
 fi
 
-virsh net-dhcp-leases $VIRSH_NET --mac $(./get-mac $HOSTNAME) \
+virsh net-dhcp-leases $VIRSH_NET --mac $(./aoi-get-mac $HOSTNAME) \
     | tail -2 | head -1 \
     | awk '{ print $5 }' \
     | cut -d '/' -f 1

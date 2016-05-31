@@ -38,7 +38,7 @@ virt-install \
     --boot network,hd \
     --import --disk=$TARGET_IMAGE_PATH \
     --memory 1024 \
-    --network network=testnet,mac=$(./get-mac testnet-$HOSTNAME) \
-    --network network=testnet,mac=$(./get-mac testnet-2-$HOSTNAME)
+    --network network=testnet,mac=$(./aoi-get-mac testnet-$HOSTNAME) \
+    --network network=testnet,mac=$(./aoi-get-mac testnet-2-$HOSTNAME)
 
 echo "Test host created: $HOSTNAME"

@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+from sys import argv
+
+def launch(*args, **kwargs):
+    cmd = "./" + kwargs.pop('command')
+    os.chdir(os.path.dirname(argv[0]))
+    os.execvp(cmd, (cmd, kwargs.pop('hostname'), kwargs.pop('image')))
+
+def init(*args, **kwargs):
+    cmd = "./" + kwargs.pop('command')
+    os.execvp(cmd, [cmd])
+
+def delete(*args, **kwargs):
+    cmd = "./" + kwargs.pop('command')
+    os.execvp(cmd, [cmd, kwargs.pop('hostname')])
+
+parser = argparse.ArgumentParser(prog='aoi')
+# parser.add_argument('--foo', action='store_true', help='foo help')
+# subparsers = parser.add_subparsers(help='sub-command help')
+subparsers = parser.add_subparsers()
+
+parser_launch = subparsers.add_parser('launch', help='Launch a cloud image.')
+parser_launch.add_argument('image', type=str, help='Image to launch. (Example: xenial)')
+parser_launch.add_argument('hostname', type=str, help='Instance hostname to create.')
+parser_launch.set_defaults(func=launch, command="aoi-launch")
+
+parser_init = subparsers.add_parser('init', help='initialize aoi for the first time')
+parser_init.set_defaults(func=init, command="aoi-init")
+
+parser_delete = subparsers.add_parser('delete', help='delete a running instance')
+parser_delete.add_argument('hostname', type=str, help='Instance hostname to delete.')
+parser_delete.set_defaults(func=delete, command="aoi-delete")
+
+# parse some argument lists
+if __name__ == '__main__':
+    out = parser.parse_args(argv[1:])
+    kwargs = vars(out)
+    func = kwargs.get('func', None)
+    if func is not None:
+        del kwargs['func']
+        func(**vars(out))
+    else:
+        parser.print_help()

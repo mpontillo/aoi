@@ -7,7 +7,7 @@ if [ "$HOSTNAME" == "" ]; then
     exit 1
 fi
 
-IP=$(./get-ip-via-arp $HOSTNAME)
+IP=$(./aoi-get-ip-via-arp $HOSTNAME)
 
 if [ "$IP" == "" ]; then
     echo "IP address could not be found for host: $HOSTNAME"
@@ -16,4 +16,4 @@ fi
 
 shift
 
-./ussh ubuntu@"$IP" "$@"
+./aoi-untrusted-ssh ubuntu@"$IP" "$@"

@@ -2,7 +2,7 @@
 
 cd "$(dirname $0)"
 
-BRIDGE=$(./get-virsh-bridge default)
+BRIDGE=$(./aoi-get-libvirt-bridge default)
 
 DNS_SERVER=$(ip addr show dev $BRIDGE | grep '^    inet' | awk '{print $2}' | cut -d '/' -f 1)
 

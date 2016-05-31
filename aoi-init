@@ -25,5 +25,5 @@ if ! id | awk '{ print $3 }' | grep '(libvirtd)' | grep -q '(kvm)'; then
     exit 1
 fi
 
-./configure-networks
-./sync
+./aoi-configure-networks
+./aoi-sync
