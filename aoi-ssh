@@ -8,6 +8,12 @@ if [ "$HOSTNAME" == "" ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+USER=ubuntu
+
+if echo $HOSTNAME | grep -q '@'; then
+    USER=$(echo $HOSTNAME | cut -d '@' -f 1)
+    HOSTNAME=$(echo $HOSTNAME | cut -d '@' -f 2)
+fi
 
 IP=$($SCRIPT_DIR/aoi-get-ip-via-arp $HOSTNAME)
 
@@ -18,4 +24,4 @@ fi
 
 shift
 
-$SCRIPT_DIR/aoi-untrusted-ssh ubuntu@"$IP" "$@"
+$SCRIPT_DIR/aoi-untrusted-ssh $USER@"$IP" "$@"
