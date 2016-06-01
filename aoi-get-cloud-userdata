@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import yaml
+
+HOST_KEY_TYPES = ['rsa', 'dsa', 'ecdsa', 'ed25519']
+HOME = os.path.expanduser('~')
+
+def get_host_private_key(keytype):
+    filename = HOME + '/.aoi/ssh_host_keys/ssh_host_%s_key' % keytype
+    if os.path.isfile(filename):
+        with open(filename) as f:
+            return f.read()
+    else:
+        return None
+
+def get_host_public_key(keytype):
+    filename = HOME + '/.aoi/ssh_host_keys/ssh_host_%s_key.pub' % keytype
+    if os.path.isfile(filename):
+        with open(filename) as f:
+            return f.read()
+    else:
+        return None
+
+def main():
+    config = {}
+    config['manage_etc_hosts'] = True
+    home = os.path.expanduser('~')
+    for keytype in HOST_KEY_TYPES:
+        key = get_host_private_key(keytype)
+        pubkey = get_host_public_key(keytype)
+        if key is not None and pubkey is not None:
+            ssh_keys = config.get('ssh_keys', {})
+            ssh_keys['%s_private' % keytype] = key
+            ssh_keys['%s_public' % keytype] = pubkey
+            config['ssh_keys'] = ssh_keys
+    print("#cloud-config")
+    yaml.dump(config, sys.stdout, default_flow_style=False, default_style="|")
+
+if __name__ == '__main__':
+    main()

@@ -48,27 +48,19 @@ qemu-img resize $TARGET_IMAGE +25GB
 qemu-img info $TARGET_IMAGE
 popd > /dev/null 2>&1
 
-PUBKEYS=$(cat ~/.ssh/authorized_keys | tr '\n' '\0' | xargs -0 printf "  - %s\n")
-
 # Create a CD-ROM with cloud-init meta-data and user-data files.
 CIDATA=$(mktemp -d)
+./aoi-get-cloud-metadata $HOSTNAME > "$CIDATA"/meta-data
+./aoi-get-cloud-userdata > "$CIDATA"/user-data
 pushd "$CIDATA"
-cat > meta-data <<EOF
-instance-id: $INSTANCE
-local-hostname: $HOSTNAME
-public-keys:
-$(printf "$PUBKEYS\n")
-EOF
-cat > user-data <<EOF
-#cloud-config
-manage_etc_hosts: True
-EOF
-chmod +x user-data
 echo "cloud-init meta data:"
 cat meta-data
 echo ""
+echo "cloud-init user data:"
+cat user-data
+echo ""
 echo "Writing cloud-init data to: $CDROM"
-genisoimage -o $CDROM -V cidata -r -J meta-data user-data
+genisoimage -o $CDROM -V cidata -r -J meta-data user-data -I utf-8
 popd
 rm -rf "$CIDATA"
 

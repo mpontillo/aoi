@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import yaml
+
+config = {}
+
+HOME = os.path.expanduser('~')
+
+def main(hostname):
+    home = os.path.expanduser('~')
+    keys = []
+    with open(HOME + '/.ssh/authorized_keys') as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.strip() != "":
+                keys.append(line)
+    config['public-keys'] = keys
+    config['instance-id'] = hostname
+    config['local-hostname'] = hostname
+    yaml.dump(config, sys.stdout, default_flow_style=False, default_style="|")
+
+if __name__ == '__main__':
+    if len(sys.argv) <= 1:
+        print("Required argument: hostname")
+        sys.exit(1)
+    hostname = sys.argv[1]
+    main(hostname)

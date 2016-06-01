@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SSH_HOST_KEY_DIR="$HOME/.aoi/ssh_host_keys"
+
+mkdir -p "$SSH_HOST_KEY_DIR"
+
+cd $SSH_HOST_KEY_DIR
+
+KEY_TYPES="dsa rsa ecdsa ed25519"
+
+for key in $KEY_TYPES; do
+    if [ ! -f ssh_host_${key}_key ]; then
+        ssh-keygen -t $key -N '' -f ssh_host_${key}_key -C "aoi@$(hostname)"
+    else
+        echo "Key already exists: $PWD/ssh_host_${key}_key"
+    fi
+done
+
