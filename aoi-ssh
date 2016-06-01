@@ -7,7 +7,9 @@ if [ "$HOSTNAME" == "" ]; then
     exit 1
 fi
 
-IP=$(./aoi-get-ip-via-arp $HOSTNAME)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+IP=$($SCRIPT_DIR/aoi-get-ip-via-arp $HOSTNAME)
 
 if [ "$IP" == "" ]; then
     echo "IP address could not be found for host: $HOSTNAME"
@@ -16,4 +18,4 @@ fi
 
 shift
 
-./aoi-untrusted-ssh ubuntu@"$IP" "$@"
+$SCRIPT_DIR/aoi-untrusted-ssh ubuntu@"$IP" "$@"

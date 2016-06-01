@@ -4,8 +4,7 @@ DEFAULT_DOMAIN=vm
 DEFAULT_NETWORK=default
 MAAS_NETWORK=testnet
 
-cd "$(dirname $0)"
-SCRIPT_DIR="$(pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # First, define the testnet network (if needed)
 virsh net-dumpxml testnet > /dev/null 2> /dev/null || ./aoi-create-test-network

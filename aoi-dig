@@ -1,9 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname $0)"
-
-BRIDGE=$(./aoi-get-libvirt-bridge default)
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BRIDGE=$($SCRIPT_DIR/aoi-get-libvirt-bridge default)
 DNS_SERVER=$(ip addr show dev $BRIDGE | grep '^    inet' | awk '{print $2}' | cut -d '/' -f 1)
 
 dig @${DNS_SERVER} "$@"

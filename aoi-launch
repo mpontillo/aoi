@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd "$(dirname $0)" 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 function error {
     echo "$@"
@@ -50,8 +50,8 @@ popd > /dev/null 2>&1
 
 # Create a CD-ROM with cloud-init meta-data and user-data files.
 CIDATA=$(mktemp -d)
-./aoi-get-cloud-metadata $HOSTNAME > "$CIDATA"/meta-data
-./aoi-get-cloud-userdata > "$CIDATA"/user-data
+$SCRIPT_DIR/aoi-get-cloud-metadata $HOSTNAME > "$CIDATA"/meta-data
+$SCRIPT_DIR/aoi-get-cloud-userdata > "$CIDATA"/user-data
 pushd "$CIDATA"
 echo "cloud-init meta data:"
 cat meta-data
@@ -60,7 +60,7 @@ echo "cloud-init user data:"
 cat user-data
 echo ""
 echo "Writing cloud-init data to: $CDROM"
-genisoimage -o $CDROM -V cidata -r -J meta-data user-data -I utf-8
+genisoimage -o $CDROM -V cidata -r -input-charset utf-8 -J meta-data user-data
 popd
 rm -rf "$CIDATA"
 
@@ -69,12 +69,12 @@ virt-install \
     --virt-type kvm --hvm --noautoconsole \
     --import --disk=$TARGET_IMAGE_PATH,backing_store=$BACKING_IMAGE_PATH --disk=$CDROM,device=cdrom \
     --memory 1024 \
-    --network network=default,mac=$(./aoi-get-mac $HOSTNAME) \
-    --network network=testnet,mac=$(./aoi-get-mac testnet-$HOSTNAME)
+    --network network=default,mac=$($SCRIPT_DIR/aoi-get-mac $HOSTNAME) \
+    --network network=testnet,mac=$($SCRIPT_DIR/aoi-get-mac testnet-$HOSTNAME)
 virsh autostart $HOSTNAME
 
 function wait_for {
-    while [ "$(./aoi-ssh $1 echo OK 2> /dev/null)" != "OK" ]; do
+    while [ "$($SCRIPT_DIR/aoi-ssh $1 echo OK 2> /dev/null)" != "OK" ]; do
         sleep 0.1
     done
 }
@@ -88,9 +88,9 @@ if [ "$DISTRO" == "xenial" ]; then
     # by DHCP will not be correct. Need to force a DHCP renewal.
     # See https://launchpad.net/bugs/1574963
     echo "Rebooting to reset lease table..."
-    ./aoi-ssh $HOSTNAME sudo service networking reload
+    $SCRIPT_DIR/aoi-ssh $HOSTNAME sudo service networking reload
     wait_for $HOSTNAME
 fi
 
 echo "$HOSTNAME is now available. To access, use:"
-echo "    ./aoi-ssh $HOSTNAME [command]"
+echo "    $SCRIPT_DIR/aoi-ssh $HOSTNAME [command]"

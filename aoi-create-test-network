@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd "$(dirname $0)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TMPDIR="$(mktemp -d)"
 function cleanup {
@@ -10,8 +10,8 @@ trap cleanup EXIT
 
 NAME=testnet
 UUID=$(uuid)
-BRIDGE=$(./aoi-get-next-libvirt-bridge)
-MAC=$(./aoi-get-mac BRIDGE.$NAME)
+BRIDGE=$($SCRIPT_DIR/aoi-get-next-libvirt-bridge)
+MAC=$($SCRIPT_DIR/aoi-get-mac BRIDGE.$NAME)
 IP=172.16.99.1
 NETMASK=255.255.255.0
 

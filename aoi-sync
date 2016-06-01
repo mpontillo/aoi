@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd "$(dirname $0)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [ "$*" != "" ]; then
     SYNC="$@"
@@ -8,5 +8,5 @@ else
     SYNC="trusty xenial"
 fi
 
-./aoi-fetch-releases $SYNC
-./aoi-verify-and-link $SYNC
+$SCRIPT_DIR/aoi-fetch-releases $SYNC
+$SCRIPT_DIR/aoi-verify-and-link $SYNC

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd "$(dirname $0)" 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 function error {
     echo "$@"
@@ -38,6 +38,6 @@ virt-install \
     --boot network,hd \
     --import --disk=$TARGET_IMAGE_PATH \
     --memory 1024 \
-    --network network=testnet,mac=$(./aoi-get-mac testnet-$HOSTNAME)
+    --network network=testnet,mac=$($SCRIPT_DIR/aoi-get-mac testnet-$HOSTNAME)
 
 echo "Test host created: $HOSTNAME"

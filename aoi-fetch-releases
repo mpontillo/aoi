@@ -6,9 +6,9 @@ if [ "$1" == "" ]; then
     exit 1
 fi
 
-cd "$(dirname $0)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 while [ "$1" != "" ]; do
     echo "Fetching $1..."
-    ./aoi-fetch-latest-image $1
+    $SCRIPT_DIR/aoi-fetch-latest-image $1
     shift
 done

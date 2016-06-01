@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-cd $(dirname $0)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-LAST_BRIDGE="$(./aoi-dump-virsh-bridges | grep -o '[0-9]' | sort -n | tail -1)"
+LAST_BRIDGE="$($SCRIPT_DIR/aoi-dump-virsh-bridges | grep -o '[0-9]' | sort -n | tail -1)"
 
 let NEXT_BRIDGE=$LAST_BRIDGE+1
 

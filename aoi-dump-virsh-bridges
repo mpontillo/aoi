@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-cd $(dirname $0)
 NETWORKS="$(virsh net-list --name)"
 
 for network in $NETWORKS; do

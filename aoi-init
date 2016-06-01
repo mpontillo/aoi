@@ -12,7 +12,7 @@ sudo apt-get install -yu \
 sudo usermod -a -G libvirtd,kvm $USER
 sudo aa-complain /usr/lib/libvirt/virt-aa-helper
 
-cd "$(dirname $0)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if ! id | awk '{ print $3 }' | grep '(libvirtd)' | grep -q '(kvm)'; then
     echo ""
@@ -25,5 +25,5 @@ if ! id | awk '{ print $3 }' | grep '(libvirtd)' | grep -q '(kvm)'; then
     exit 1
 fi
 
-./aoi-configure-networks
-./aoi-sync
+$SCRIPT_DIR/aoi-configure-networks
+$SCRIPT_DIR/aoi-sync

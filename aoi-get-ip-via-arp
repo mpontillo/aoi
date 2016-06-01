@@ -7,4 +7,6 @@ if [ "$HOSTNAME" == "" ]; then
     exit 1
 fi
 
-ip -4 neigh show dev virbr0 | grep $(./aoi-get-mac $HOSTNAME) | awk '{ print $1 }'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+ip -4 neigh show dev virbr0 | grep $($SCRIPT_DIR/aoi-get-mac $HOSTNAME) | awk '{ print $1 }'
