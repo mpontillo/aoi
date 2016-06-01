@@ -27,3 +27,4 @@ fi
 
 $SCRIPT_DIR/aoi-configure-networks
 $SCRIPT_DIR/aoi-sync
+$SCRIPT_DIR/aoi-generate-ssh-keys
