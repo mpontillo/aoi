@@ -1,7 +1,63 @@
 ## Introduction
 
-This repository contains a set of scripts that allow you to easily deploy
-Ubuntu cloud images onto local virtual machines.
+Before you can deploy a cloud, you first need a blue sky. That's where `aoi`
+(pronounced "ah-oh-E") comes in. (`aoi` is the Japanese word for "blue".)
+
+`aoi` is a set of scripts that allow you to easily deploy Ubuntu cloud images
+onto local virtual machines *for test purposes only*. **This tool is optimized
+to create consistent test environments, and should not be used for production
+environments.**
+
+### Why virtual machines and not containers?
+
+Because containers can behave slightly differently than a fully virtualized
+host. Since `aoi` is intended for software QA, it needs to remove the
+"are we in a container?" variable.
+
+Simply, running software in containers is a separate test case. It would be
+great `aoi` to support them alongside virtual machines.
+
+### Features
+
+`aoi` has the following features, which are interesting for creating
+test environments:
+
+#### Fast Virtual Machine Creation
+
+When you initialize `aoi`, it uses `rsync` to download the latest Ubuntu
+cloud images, then verifies them and creates a hash-based link.
+
+The cloud images are used as a base image for any new virtual machine
+launched, so virtual machines are fast to create and space-efficient.
+
+#### Consistent MAC Addresses
+
+When you launch an image with `aoi`, instances with the same name will always
+get the same MAC address. This makes it easy to identify which nodes on the
+network belong to which host, which means it's much easier to create scripts
+which must work with MAC addresses.
+
+As a side benefit, DHCP servers will provide consistent IP addresses to
+test machines as well. (No more running out of IP addresses since you tore
+down and rebuilt your test environment too much!)
+
+#### Consistent SSH Keys
+
+When you initialize `aoi`, it creates SSH host keys that will be used for
+every virtual machine. That makes it easier to use `ssh`, since the host key
+won't change whenever a test environment is torn down and rebuilt.
+
+#### Runs as a Normal User
+
+After `aoi` is initialized, no root access is required to launch new
+virtual machines. Your user must belong to the `libvirtd` and `kvm` groups
+(and this will be done for you automatically upon `aoi init`).
+
+#### Compartmentalized Testing
+
+By default, `aoi` simply uses the `virbr0` bridge that is created when
+`libvirt` is installed. (A second private network is created for testing.)
+There is no dependency on network configuration.
 
 ## Prerequisites
 
@@ -19,106 +75,105 @@ a default username and password.
 
 ## Usage
 
-An `init` script is supplied, which will take care of the tasks needed to get
-started. If your user is not already in the `kvm` and `libvirtd` groups, you
-may need to run the script twice.
+You should put `aoi` in your `$PATH`. For example:
+
+    git clone https://github.com/pontillo/aoi.git
+    cd aoi
+    export PATH="$(pwd):$PATH"
+
+Running `aoi init` will take care of the tasks needed to get started. If your
+user is not already in the `kvm` and `libvirtd` groups, you may need lot out
+and run the script again.
 
 Example usage (from scratch):
 
-    ./init
-    ./create <vm-hostname> [distro]
+    aoi init
+    aoi launch <release-codename> <instance-name>
+
+By default, the *release-codename* argument can be `trusty` or `xenial`, but
+cloud images for other releases can by synchronized manually.
 
 For example, to create a virtual machine named `foo` running xenial, you
 could use:
 
-    ./create foo xenial
+    aoi launch xenial foo
+
+Then you can SSH to the instance (even without knowing its IP address)
+using the `aoi-ssh` script:
+
+    aoi-ssh foo
+
+After you've finished with the virutal machine, you can easily delete it
+(along with all its data):
+
+    aoi-delete foo
+
+### Re-synchronizing Images
 
 As part of the `init` script, the `sync` script runs. While `sync` must only
 be run once, if it is run subsequently, it will fetch the latest cloud image,
 but leave the old image in place (based on its sha256 hash) in case other
 images were built upon it.
 
-After you've finished with the virutal machine, you can easily delete it
-(along with all its data):
-
-    ./delete <vm-hostname>
-
-## Configuring a Test Network
-
+## Test Networks
 
 By default, a test network (called `testnet`) will be created by the `init`
-script. Also, the domain name for the default network will be set to `.vm`.
-This means you can look up the IP addresses for your machines in the
-`.vm` domain by querying the `dnsmasq` running on the default network, which
-is at `192.168.122.1` by default.
+script, using the `172.16.99.0/24` subnet (this cannot yet be configured
+without changing the script).
 
-If you want your virutual machines to be resolved in Ubuntu, (assuming you
-are running NetworkManager), you can create 
-`/etc/NetworkManager/dnsmasq.d/libvirt.conf` as follows:
-
-    server=/vm/192.168.122.1
-
-This assumes that your `default` network is configured to with an IP address
-of `192.168.122.1`.
-
-**Note:** This currently causes issues whereby DNS queries can become
-extremely slow. See [this question on Server Fault](https://serverfault.com/questions/642448/)
-for more information.
-
-## Utility Scripts
+## Command Reference
 
 This repository also contains a few helper scripts, which can be helpful
 (assuming, as the scripts do, that you are using `virbr0`).
 
-### `get-ip-via-arp`
+### `aoi-get-ip-via-arp`
 
 Returns the IP address for the specified hostname, based on its mac (returned
-from `get-mac`), by looking it up in the ARP cache.
+from `aoi-get-mac`), by looking it up in the ARP cache.
 
-### `get-ip-via-virsh-dhcp`
+### `aoi-get-ip-via-virsh-dhcp`
 
 Returns the IP address for the specified hostname, based on its mac (returned
 from `get-mac`), by looking it up in the DHCP lease table.
 
-### `get-mac`
+### `aoi-get-mac`
 
 Utility to return a consistent MAC address given the specified hostname. This
 is useful so that when tearing down and recreating virtual machines with the
 same name, consistent MAC addresses are used, which should cause `dnsmasq` to
 hand out consistent IP addresses as well.
 
-### `get-virsh-bridge`
+### `aoi-get-libvirt-bridge`
 
 Gets the name of a virsh bridge, based on the virsh network name.
 
-### `ussh`
+### `aoi-untrusted-ssh`
 
-The `ussh` utility stands for **Untrusted SSH**. It is a wrapper that allows
-SSH without checking the key of the remote system.
+A wrapper that allows SSH without checking the key of the remote system.
+This is used despite the "consistent SSH keys" approach for easier scripting
+(but you'll appreciate the consistent keys if you need to manually poke at
+a test environment).
 
-### `vssh`
+### `aoi-ssh`
 
-The `vssh` utility stands for **VM SSH**. It is a wrapper which attempts to
-look up the IP address of the virtual machine (based on the ARP cache and the
-expected hostname-based MAC from the `get_mac` script), then runs `ussh` to open a session.
+A wrapper which attempts to look up the IP address of the virtual machine
+(based on the ARP cache and the expected hostname-based MAC from the
+`aoi-get-mac` script), then uses `aoi-untrusted-ssh` to open a session.
 
-### `vcleardns`
+### `aoi-clear-virsh-dnsmasq`
 
 Utility script to clear out `dnsmasq`'s lease database for the default network
-(most likely `virbr0`).  Also restarts the `libvirt-bin` service.
+(most likely `virbr0`).  Also restarts the `libvirt-bin` service. Use with
+caution, as this can cause virtual machines (and containers) attached to the
+bridge to be disconnected until restarted.
 
-### `get-mac`
-
-Utility to return a consistent MAC address given the specified hostname. This
-is useful so that when tearing down and recreating virtual machines with the
-same name, consistent MAC addresses are used, which should cause `dnsmasq` to
-hand out consistent IP addresses as well.
-
-### `vdig`
+### `aoi-dig`
 
 Wrapper to use `dig` to query the `dnsmasq` running on `virbr0`.
 
-## Installation Notes
+## Appendix A: Installation Notes
+
+Items in this appendix are now taken care of by the `aoi init` script.
 
 First, you'll need to ensure the following packages are installed:
 
@@ -130,6 +185,8 @@ work:
     sudo usermod -a -G libvirtd,kvm $USER
 
 ### Possible Workaround Needed
+
+This is currently taken care of by the `aoi init` script.
 
 If you get errors regarding permission to access the backing images, you may
 need to set the AppArmor profile for libvirt to *complain mode*:
