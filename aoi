@@ -6,15 +6,17 @@ from sys import argv
 
 def launch(*args, **kwargs):
     cmd = "./" + kwargs.pop('command')
-    os.chdir(os.path.dirname(argv[0]))
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     os.execvp(cmd, (cmd, kwargs.pop('hostname'), kwargs.pop('image')))
 
 def init(*args, **kwargs):
     cmd = "./" + kwargs.pop('command')
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     os.execvp(cmd, [cmd])
 
 def delete(*args, **kwargs):
     cmd = "./" + kwargs.pop('command')
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     os.execvp(cmd, [cmd, kwargs.pop('hostname')])
 
 parser = argparse.ArgumentParser(prog='aoi')
