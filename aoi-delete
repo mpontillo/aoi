@@ -11,7 +11,8 @@ IMAGES=$HOME/.cloud-images
 IMAGE=$IMAGES/$NAME.img
 CDROM=$IMAGES/${NAME}-config.iso
 
-virsh destroy $NAME --graceful
+# We use || true here because it might not be running.
+virsh destroy $NAME || true
 
 # Bug: for some reason, --remove-all-storage does not seem to work
 # in all cases.
