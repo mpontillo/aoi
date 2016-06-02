@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import yaml
+
+HOME = os.path.expanduser('~')
+
+def main():
+    home = os.path.expanduser('~')
+    keys = []
+    with open(HOME + '/.ssh/authorized_keys') as f:
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip()
+            if line != "":
+                print(line)
+
+if __name__ == '__main__':
+    main()
