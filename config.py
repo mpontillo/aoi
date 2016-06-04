@@ -45,6 +45,9 @@ def get_command(key, default=None):
     if default is not None and key not in aoi_config:
         print(default)
     else:
+        if key not in aoi_config:
+            sys.stderr.write("Key not found: %s\n" % key)
+            sys.exit(1)
         print(aoi_config[key])
 
 def set_command(key, value):
@@ -54,6 +57,9 @@ def set_command(key, value):
 
 def delete_command(key):
     aoi_config = read_or_create_config()
+    if key not in aoi_config:
+        # The key is already gone. Nothing to do.
+        return
     del aoi_config[key]
     write_config(get_config_filename(), aoi_config)
 
