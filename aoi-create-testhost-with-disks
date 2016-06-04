@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$(dirname $0)" 
 
 function error {
     echo "$@"
@@ -21,24 +21,29 @@ INSTANCE=$NAME
 IMAGES_DIR=$HOME/.cloud-images
 
 TARGET_IMAGE=$HOSTNAME.img
-TARGET_IMAGE_PATH=$IMAGES_DIR/$HOSTNAME.img
 
 virsh pool-define-as \
     --name cloud-images --type dir --target $IMAGES_DIR 2> /dev/null \
     || echo "Image pool already exists: $IMAGES_DIR"
 
 pushd $IMAGES_DIR > /dev/null 2>&1
-qemu-img create -f qcow2 $TARGET_IMAGE 25G
-qemu-img info $TARGET_IMAGE
+for image in ${HOSTNAME}-{1,2,3,4,5,6,7,8,9}.img; do
+    qemu-img create -f qcow2 $image 3G
+    qemu-img info $image
+    IMAGE_ARGS="$IMAGE_ARGS --disk=$IMAGES_DIR/$image,bus=scsi"
+done
 popd > /dev/null 2>&1
 
 virt-install \
     --name $HOSTNAME \
     --virt-type kvm --hvm --noautoconsole \
     --boot network,hd \
-    --import --disk=$TARGET_IMAGE_PATH \
+    --import \
+    $IMAGE_ARGS \
     --memory 1024 \
-    --network network=testnet,mac=$($SCRIPT_DIR/aoi-get-mac testnet-$HOSTNAME)
+    --network network=testnet,mac=$(./aoi-get-mac testnet-$HOSTNAME) \
+    --network network=testnet,mac=$(./aoi-get-mac testnet-2-$HOSTNAME)
+
 virsh destroy $HOSTNAME
 
 echo "Test host created: $HOSTNAME"

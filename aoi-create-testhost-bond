@@ -40,5 +40,6 @@ virt-install \
     --memory 1024 \
     --network network=testnet,mac=$(./aoi-get-mac testnet-$HOSTNAME) \
     --network network=testnet,mac=$(./aoi-get-mac testnet-2-$HOSTNAME)
+virsh destroy $HOSTNAME
 
 echo "Test host created: $HOSTNAME"
