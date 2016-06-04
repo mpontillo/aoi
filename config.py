@@ -37,6 +37,9 @@ def main(args):
     elif args[0] == 'set':
         aoi_config[args[1]] = args[2]
         write_config(get_config_filename(), aoi_config)
+    elif args[0] == 'del' or args[0] == 'delete':
+        del aoi_config[args[1]]
+        write_config(get_config_filename(), aoi_config)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
