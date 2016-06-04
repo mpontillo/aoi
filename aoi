@@ -4,6 +4,9 @@ import argparse
 import os
 from sys import argv
 
+# Local imports.
+import config
+
 def launch(*args, **kwargs):
     cmd = "./" + kwargs.pop('command')
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -29,12 +32,16 @@ parser_launch.add_argument('image', type=str, help='Image to launch. (Example: x
 parser_launch.add_argument('hostname', type=str, help='Instance hostname to create.')
 parser_launch.set_defaults(func=launch, command="aoi-launch")
 
-parser_init = subparsers.add_parser('init', help='initialize aoi for the first time')
+parser_init = subparsers.add_parser('init', help='Initialize aoi for the first time.')
 parser_init.set_defaults(func=init, command="aoi-init")
 
-parser_delete = subparsers.add_parser('delete', help='delete a running instance')
+parser_delete = subparsers.add_parser('delete', help='Delete a running instance.')
 parser_delete.add_argument('hostname', type=str, help='Instance hostname to delete.')
 parser_delete.set_defaults(func=delete, command="aoi-delete")
+
+parser_config = subparsers.add_parser('config', help="Configure aoi.")
+config.configure_subparser(parser_config)
+parser_config.set_defaults(func=config.show_command)
 
 # parse some argument lists
 if __name__ == '__main__':
