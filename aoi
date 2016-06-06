@@ -2,7 +2,7 @@
 
 import argparse
 import os
-from sys import argv
+from sys import argv, exit
 
 # Local imports.
 import config
@@ -45,11 +45,13 @@ parser_config.set_defaults(func=config.show_command)
 
 # parse some argument lists
 if __name__ == '__main__':
-    out = parser.parse_args(argv[1:])
+    out, unknown = parser.parse_known_args(argv[1:])
     kwargs = vars(out)
     func = kwargs.get('func', None)
     if func is not None:
         del kwargs['func']
         func(**vars(out))
     else:
+        print("Got unknown arguments: %r" % unknown)
         parser.print_help()
+        exit(1)
