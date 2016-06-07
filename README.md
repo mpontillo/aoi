@@ -10,12 +10,10 @@ environments.**
 
 ### Why virtual machines and not containers?
 
-Because containers can behave slightly differently than a fully virtualized
-host. Since `aoi` is intended for software QA, it needs to remove the
-"are we in a container?" variable.
-
-Simply, running software in containers is a separate test case. It would be
-great `aoi` to support them alongside virtual machines.
+Containers can behave slightly differently than a fully virtualized
+host. Since `aoi` is intended for software QA, the first step was to remove
+the "are we in a container?" variable. Container support is in mind
+for the near future.
 
 ### Features
 

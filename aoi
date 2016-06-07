@@ -22,6 +22,12 @@ def delete(*args, **kwargs):
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     os.execvp(cmd, [cmd, kwargs.pop('hostname')])
 
+def ssh(*args, **kwargs):
+    cmd = "./" + kwargs.pop('command')
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    argv = [cmd] + list(args)
+    os.execvp(cmd, argv)
+
 parser = argparse.ArgumentParser(prog='aoi')
 # parser.add_argument('--foo', action='store_true', help='foo help')
 # subparsers = parser.add_subparsers(help='sub-command help')
@@ -40,8 +46,12 @@ parser_delete.add_argument('hostname', type=str, help='Instance hostname to dele
 parser_delete.set_defaults(func=delete, command="aoi-delete")
 
 parser_config = subparsers.add_parser('config', help="Configure aoi.")
+# Call out to the config module to add the subparser parameters.
 config.configure_subparser(parser_config)
 parser_config.set_defaults(func=config.show_command)
+
+parser_ssh = subparsers.add_parser('ssh', help='Open an SSH session to a running instance.')
+parser_ssh.set_defaults(func=ssh, command="aoi-ssh")
 
 # parse some argument lists
 if __name__ == '__main__':
@@ -50,8 +60,7 @@ if __name__ == '__main__':
     func = kwargs.get('func', None)
     if func is not None:
         del kwargs['func']
-        func(**vars(out))
+        func(*unknown, **vars(out))
     else:
-        print("Got unknown arguments: %r" % unknown)
         parser.print_help()
         exit(1)

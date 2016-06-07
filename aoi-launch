@@ -67,6 +67,7 @@ rm -rf "$CIDATA"
 virt-install \
     --name $HOSTNAME \
     --virt-type kvm --hvm --noautoconsole \
+    --vcpus 2 \
     --import --disk=$TARGET_IMAGE_PATH,backing_store=$BACKING_IMAGE_PATH --disk=$CDROM,device=cdrom \
     --memory 1024 \
     --network network=default,mac=$($SCRIPT_DIR/aoi-get-mac $HOSTNAME) \
@@ -93,11 +94,11 @@ if [ "$DISTRO" == "xenial" ]; then
 fi
 
 UBUNTU_ARCHIVE_HOST="$(aoi config get ubuntu_archive_host '')"
-UBUNTU_SECURITY_HOST="$(aoi config get ubuntu_security_host '')"
-if [ "$ARCHIVE_HOST" != "" ]; then
+if [ "$UBUNTU_ARCHIVE_HOST" != "" ]; then
     $SCRIPT_DIR/aoi-ssh $HOSTNAME sudo sed --in-place "s/archive.ubuntu.com/$UBUNTU_ARCHIVE_HOST/" /etc/apt/sources.list
 fi
-if [ "$SECURITY_ARCHIVE_HOST" != "" ]; then
+UBUNTU_SECURITY_HOST="$(aoi config get ubuntu_security_host '')"
+if [ "$UBUNTU_SECURITY_HOST" != "" ]; then
     $SCRIPT_DIR/aoi-ssh $HOSTNAME sudo sed --in-place "s/security.ubuntu.com/$UBUNTU_SECURITY_HOST/" /etc/apt/sources.list
 fi
 
