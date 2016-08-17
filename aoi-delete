@@ -6,10 +6,10 @@ if [ "$1" == "" ]; then
 fi
 
 NAME=$1
-IMAGES=$HOME/.cloud-images
+IMAGES_DIR="$(aoi config get images_dir $HOME/.cloud-images)"
 
-IMAGE=$IMAGES/$NAME.img
-CDROM=$IMAGES/${NAME}-config.iso
+IMAGE=$IMAGES_DIR/$NAME.img
+CDROM=$IMAGES_DIR/${NAME}-config.iso
 
 # We use || true here because it might not be running.
 virsh destroy $NAME || true

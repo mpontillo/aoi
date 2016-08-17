@@ -8,8 +8,8 @@ if [ "$DISTRO" == "" ]; then
     exit 1
 fi
 
-IMAGES_DIR=$HOME/.cloud-images
-DISTRO_IMAGES=$HOME/.cloud-images/$DISTRO
+IMAGES_DIR="$(aoi config get images_dir $HOME/.cloud-images)"
+DISTRO_IMAGES=$IMAGES_DIR/$DISTRO
 
 mkdir -p $DISTRO_IMAGES
 # Set premissions so that both KVM and the current user will retain access

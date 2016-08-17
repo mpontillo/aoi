@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+IMAGES_DIR="$(aoi config get images_dir $HOME/.cloud-images)"
 
 function error {
     echo "$@"
@@ -17,8 +18,6 @@ fi
 
 HOSTNAME=$NAME
 INSTANCE=$NAME
-
-IMAGES_DIR=$HOME/.cloud-images
 
 TARGET_IMAGE=$HOSTNAME.img
 TARGET_IMAGE_PATH=$IMAGES_DIR/$HOSTNAME.img
