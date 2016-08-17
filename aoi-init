@@ -8,7 +8,8 @@ fi
 
 sudo apt-get update
 sudo apt-get install -yu \
-    libvirt-bin qemu-kvm virtinst uuid apparmor-profiles apparmor-utils
+    libvirt-bin qemu-kvm virtinst uuid apparmor-profiles apparmor-utils \
+    genisoimage
 sudo usermod -a -G libvirtd,kvm $USER
 sudo aa-complain /usr/lib/libvirt/virt-aa-helper
 
