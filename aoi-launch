@@ -80,7 +80,8 @@ virt-install \
     --import --disk=$TARGET_IMAGE_PATH,backing_store=$BACKING_IMAGE_PATH --disk=$CDROM,device=cdrom \
     --memory $VIRT_RAM \
     --network network=default,mac=$($SCRIPT_DIR/aoi-get-mac $HOSTNAME) \
-    --network network=testnet,mac=$($SCRIPT_DIR/aoi-get-mac testnet-$HOSTNAME)
+    --network network=testnet,mac=$($SCRIPT_DIR/aoi-get-mac testnet-$HOSTNAME) \
+    --check path_in_use=off
 virsh autostart $HOSTNAME
 
 function wait_for {
