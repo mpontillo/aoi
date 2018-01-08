@@ -24,5 +24,8 @@ cd $DISTRO_IMAGES
 
 rsync \
     --verbose --recursive --times --links --prune-empty-dirs \
-    --include '*-amd64-disk1.img' --include 'SHA256*' --exclude '*' \
+    --include '*-amd64-disk1.img' \
+    --include '*-amd64.img' \
+    --include 'SHA256*' \
+    --exclude '*' \
     rsync://cloud-images.ubuntu.com/cloud-images/$DISTRO/current/ .

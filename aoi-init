@@ -11,7 +11,8 @@ sudo apt-get install -yu \
     libvirt-bin qemu-kvm virtinst uuid apparmor-profiles apparmor-utils \
     genisoimage
 sudo usermod -a -G libvirtd,kvm $USER
-sudo aa-complain /usr/lib/libvirt/virt-aa-helper
+sudo aa-complain usr.lib.libvirt.virt-aa-helper
+sudo aa-complain usr.sbin.libvirtd
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

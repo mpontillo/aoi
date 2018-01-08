@@ -53,7 +53,7 @@ if [ "$BACKING_IMAGE" == "" ]; then
 fi
 BACKING_IMAGE_PATH=$IMAGES_DIR/$BACKING_IMAGE
 qemu-img create -f qcow2 -b "$BACKING_IMAGE" $TARGET_IMAGE
-qemu-img resize $TARGET_IMAGE +${VIRT_DISK_SIZE}GB
+qemu-img resize $TARGET_IMAGE +${VIRT_DISK_SIZE}G
 qemu-img info $TARGET_IMAGE
 popd > /dev/null 2>&1
 
