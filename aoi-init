@@ -8,17 +8,30 @@ fi
 
 sudo apt-get update
 sudo apt-get install -yu \
-    libvirt-bin qemu-kvm virtinst uuid apparmor-profiles apparmor-utils \
-    genisoimage
-sudo usermod -a -G libvirtd,kvm $USER
-sudo aa-complain usr.lib.libvirt.virt-aa-helper
-sudo aa-complain usr.sbin.libvirtd
+    libvirt-daemon-system libvirt-clients \
+    bridge-utils \
+    qemu-kvm virtinst \
+    uuid \
+    apparmor-profiles apparmor-utils \
+    genisoimage \
+    libosinfo-bin
+
+# Note: libosinfo is for 'osinfo-query os', which defines the OS variants that
+# virt-install knows about.
+
+# Add the 'libvirt' and 'kvm' groups, but don't fail if it already exists.
+sudo addgroup libvirt || true
+sudo addgroup kvm || true
+sudo usermod -a -G libvirt,kvm $USER
+
+sudo aa-complain /usr/lib/libvirt/virt-aa-helper
+sudo aa-complain /usr/sbin/libvirtd
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if ! id | awk '{ print $3 }' | grep '(libvirtd)' | grep -q '(kvm)'; then
+if ! id | awk '{ print $3 }' | grep '(libvirt)' | grep -q '(kvm)'; then
     echo ""
-    echo "Your user was just added to the 'libvirtd' and 'kvm' groups, but"
+    echo "Your user was just added to the 'libvirt' and 'kvm' groups, but"
     echo "membership was not yet taken effect."
     echo "You need to log out, log back in, and then re-run:"
     echo ""

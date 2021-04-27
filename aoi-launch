@@ -17,7 +17,7 @@ else
 fi
 
 if [ "$2" == "" ]; then
-    DISTRO=trusty
+    DISTRO=focal
 else
     DISTRO=$2
 fi
@@ -52,7 +52,7 @@ if [ "$BACKING_IMAGE" == "" ]; then
     exit 1
 fi
 BACKING_IMAGE_PATH=$IMAGES_DIR/$BACKING_IMAGE
-qemu-img create -f qcow2 -b "$BACKING_IMAGE" $TARGET_IMAGE
+qemu-img create -f qcow2 -F qcow2 -b "$BACKING_IMAGE" $TARGET_IMAGE
 qemu-img resize $TARGET_IMAGE +${VIRT_DISK_SIZE}G
 qemu-img info $TARGET_IMAGE
 popd > /dev/null 2>&1
