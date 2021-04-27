@@ -168,26 +168,3 @@ bridge to be disconnected until restarted.
 ### `aoi-dig`
 
 Wrapper to use `dig` to query the `dnsmasq` running on `virbr0`.
-
-## Appendix A: Installation Notes
-
-Items in this appendix are now taken care of by the `aoi init` script.
-
-First, you'll need to ensure the following packages are installed:
-
-    sudo apt install libvirt-bin qemu-kvm virtinst uuid
-
-Your user must be in the `libvirtd` and `kvm` groups for these scripts to
-work:
-
-    sudo usermod -a -G libvirtd,kvm $USER
-
-### Possible Workaround Needed
-
-This is currently taken care of by the `aoi init` script.
-
-If you get errors regarding permission to access the backing images, you may
-need to set the AppArmor profile for libvirt to *complain mode*:
-
-    $ sudo apt-get install apparmor-profiles apparmor-utils
-    $ sudo aa-complain /usr/lib/libvirt/virt-aa-helper
