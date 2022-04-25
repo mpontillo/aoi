@@ -73,7 +73,7 @@ genisoimage -o $CDROM -V cidata -r -input-charset utf-8 -J meta-data user-data
 popd
 rm -rf "$CIDATA"
 
-virt-install \
+VIRTINSTALL_OSINFO_DISABLE_REQUIRE=1 virt-install \
     --name $HOSTNAME \
     --virt-type kvm --hvm --noautoconsole \
     --vcpus $VIRT_CPUS \
