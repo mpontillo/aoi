@@ -8,7 +8,7 @@ if [ "$DISTRO" == "" ]; then
     exit 1
 fi
 
-IMAGES_DIR="$(aoi config get images_dir $HOME/.cloud-images)"
+IMAGES_DIR="$(aoi config get images_dir /var/lib/libvirt/images/aoi)"
 DISTRO_IMAGES=$IMAGES_DIR/$DISTRO
 
 mkdir -p $DISTRO_IMAGES

@@ -24,8 +24,18 @@ sudo addgroup libvirt || true
 sudo addgroup kvm || true
 sudo usermod -a -G libvirt,kvm $USER
 
-sudo aa-complain /usr/lib/libvirt/virt-aa-helper
-sudo aa-complain /usr/sbin/libvirtd
+# These lines might be needed if you want to use an images directory
+# which is not a subdirectory of /var/lib/libvirt/images.
+#
+# Use at your own risk.
+#
+# sudo aa-complain /usr/lib/libvirt/virt-aa-helper
+# sudo aa-complain /usr/sbin/libvirtd
+
+IMAGES_DIR="$(aoi config get images_dir /var/lib/libvirt/images/aoi)"
+sudo mkdir -p $IMAGES_DIR
+sudo chown $USER:kvm $IMAGES_DIR
+
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

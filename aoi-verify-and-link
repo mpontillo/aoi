@@ -23,7 +23,7 @@ if [ "$*" == "" ]; then
     echo "    $0 xenial trusty"
 fi
 
-IMAGES_DIR="$(aoi config get images_dir $HOME/.cloud-images)"
+IMAGES_DIR="$(aoi config get images_dir /var/lib/libvirt/images/aoi)"
 cd $IMAGES_DIR
 ROOT="$(pwd)"
 DISTRIBUTIONS="$@"

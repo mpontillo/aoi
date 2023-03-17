@@ -6,7 +6,7 @@ if [ "$1" == "" ]; then
 fi
 
 NAME=$1
-IMAGES_DIR="$(aoi config get images_dir $HOME/.cloud-images)"
+IMAGES_DIR="$(aoi config get images_dir /var/lib/libvirt/images/aoi)"
 
 IMAGE=$IMAGES_DIR/$NAME.img
 CDROM=$IMAGES_DIR/${NAME}-config.iso
