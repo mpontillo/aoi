@@ -12,6 +12,7 @@ sudo apt-get install -yu \
     bridge-utils \
     qemu-kvm virtinst \
     uuid \
+    rsync \
     apparmor-profiles apparmor-utils \
     genisoimage \
     libosinfo-bin
